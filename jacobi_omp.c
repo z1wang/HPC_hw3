@@ -44,10 +44,11 @@ int main(int argc, char *argv[]){
 
 
 	double* res = calloc(N, sizeof(double));
+	double* ans = calloc(N, sizeof(double));
+	double *t;
 	double start = omp_get_wtime( );
-	for(j = 1; j < F; j++){
-		double* ans = calloc(N, sizeof(double));
-		#pragma omp parallel for schedule(dynamic,10) private(temp, tid) shared(ans, res)		
+	for(j = 1; j < F; j++){		
+		#pragma omp parallel for schedule(dynamic,10) private(temp, tid, i) shared(ans, res)		
 		for(i = 0; i < N; i++){
 			if(i == 0){
 				temp = 1 + res[i + 1] * unit;
@@ -63,12 +64,13 @@ int main(int argc, char *argv[]){
 				ans[i] = ans[i]/unit;							
 			}
 		}
-		free(res);
+		t = res;
 		res = ans;
+		ans = t;
 	}
 	double end = omp_get_wtime( );
 	printf("Elapsed time is %f\n", end - start);
 	double r = residue(N, res);
 	free(res);
-
+	free(ans);
 }
