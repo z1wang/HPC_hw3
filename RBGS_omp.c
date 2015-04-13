@@ -55,7 +55,7 @@ int main(int argc, char *argv[]){
 	double *t2;
 	double start = omp_get_wtime( );
 	for(j = 1; j < F; j++){
-		#pragma omp parallel for schedule(dynamic,10) private(temp, tid, t1) shared(rns, black)		
+		#pragma omp parallel for private(temp, tid, t1) shared(rns, black)		
 		for(i = 0; i < size; i++){
 			if(i == 0){
 				temp = 1 + black[0] * unit;
