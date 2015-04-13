@@ -70,7 +70,7 @@ int main(int argc, char *argv[]){
 		t1 = red;
 		red = rns;
 		rns = t1;
-		#pragma omp parallel for schedule(dynamic,10) private(temp, tid, t2) shared(bns, red)		
+		#pragma omp parallel for private(temp, tid, t2) shared(bns, red)		
 		for(i = 0; i < size; i++){
 			if(i == (size - 1)){
 				temp = 1 + red[size - 1] * unit;
