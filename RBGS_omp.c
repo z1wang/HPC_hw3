@@ -49,11 +49,13 @@ int main(int argc, char *argv[]){
 
 	double* red = calloc(size, sizeof(double));
 	double* black = calloc(size, sizeof(double));
+	double* rns = calloc(size, sizeof(double));
+	double* bns = calloc(size, sizeof(double));
+	double *t1;
+	double *t2;
 	double start = omp_get_wtime( );
 	for(j = 1; j < F; j++){
-		double* rns = calloc(size, sizeof(double));
-		double* bns = calloc(size, sizeof(double));
-		#pragma omp parallel for schedule(dynamic,10) private(temp, tid) shared(rns, black)		
+		#pragma omp parallel for schedule(dynamic,10) private(temp, tid, t1) shared(rns, black)		
 		for(i = 0; i < size; i++){
 			if(i == 0){
 				temp = 1 + black[0] * unit;
@@ -65,9 +67,10 @@ int main(int argc, char *argv[]){
 				rns[i] = rns[i]/unit;							
 			}
 		}
-		free(red);
+		t1 = red;
 		red = rns;
-		#pragma omp parallel for schedule(dynamic,10) private(temp, tid) shared(bns, red)		
+		rns = t1;
+		#pragma omp parallel for schedule(dynamic,10) private(temp, tid, t2) shared(bns, red)		
 		for(i = 0; i < size; i++){
 			if(i == (size - 1)){
 				temp = 1 + red[size - 1] * unit;
@@ -79,8 +82,9 @@ int main(int argc, char *argv[]){
 				bns[i] = bns[i]/unit;							
 			}
 		}
-		free(black);
+		t2 = black;
 		black = bns;
+		bns = t2;
 	}
 	double end = omp_get_wtime( );
 	printf("Elapsed time is %f\n", end - start);
@@ -91,5 +95,9 @@ int main(int argc, char *argv[]){
 	}
 	double r = residue(N, res);
 	free(res);
+	free(red);
+	free(black);
+	free(bns);
+	free(rns);
 
 }
